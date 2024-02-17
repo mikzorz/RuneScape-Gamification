@@ -179,7 +179,7 @@ def display_skills_on_home_screen():
     for skill, symbol in skill_symbols.items():
         label = QtWidgets.QLabel(f"{symbol} {skills[skill]['level']}")
         label.setObjectName(f"{skill}_label")
-        label.setTextFormat(QtCore.Qt.RichText)
+        label.setTextFormat(QtCore.Qt.TextFormat.RichText)
         # set the tool tip to display a message with the XP needed for the next level
         label.setToolTip("{} Level {} ({}/{} XP)".format(skill, skills[skill]["level"], skills[skill]["xp"], level_xp[skills[skill]["level"]]))
         layout.addWidget(label)
@@ -189,7 +189,7 @@ def display_skills_on_home_screen():
     widget.setLayout(layout)
     dock.setWidget(widget)
     # add the dock to the main window
-    mw.addDockWidget(QtCore.Qt.RightDockWidgetArea, dock)
+    mw.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, dock)
      
 # pop up for debugging purposes
 def debug_popup(y):
