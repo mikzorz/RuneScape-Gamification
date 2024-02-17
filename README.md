@@ -1,3 +1,15 @@
+Runescape-Gamification Anki addon updated for **Anki v23.12.1**
+
+**CHANGELOG**  
+
+- ***FIX***: *Added prefixes to Qt6 enums*
+
+<hr/>  
+<hr/>
+
+#### *Original README.md*
+<br/>
+
 Anki <strong>Gamification</strong> inspired by RuneScape, code largely written by Chat-GPT. Currently there are 5 'skills' that users can gain experience in and level up: Focus, Curiosity, Endurance, Recall and Speed.
 
 <strong>FEATURES</strong>
