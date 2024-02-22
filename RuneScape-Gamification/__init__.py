@@ -7,6 +7,10 @@ import time
 import os
 
 from aqt import gui_hooks, mw
+# import the "show info" tool from utils.py
+from aqt.utils import showInfo, qconnect
+# import all of the Qt GUI library
+from aqt.qt import *
 from PyQt6 import QtCore, QtGui
 from PyQt6.QtCore import QEasingCurve, QPropertyAnimation, QTimer, Qt, QRect
 from PyQt6.QtGui import QFont
@@ -157,14 +161,12 @@ def on_answer_button(reviewer, card, ease):
       
     # increase the user's progress on the "recall" skill
     increase_skill_progress("recall", recall_xp)
-    # update the tool tip for the label to display the updated "speed" level and XP
     update_skill_tool_tip("recall")
+
     # Increase curiosity by 1 xp for new cards
     if card.ivl == 0:
         curiosity_xp = random.sample([1, 2, 3, 4, 5], k=1)
-    	# increase the user's progress on the "recall" skill
         increase_skill_progress("curiosity", curiosity_xp[0])
-        # update the tool tip for the label to display the updated "speed" level and XP
         update_skill_tool_tip("curiosity")
 
 # define a function to display the skill levels on the Anki home screen
@@ -201,10 +203,35 @@ def debug_popup(y):
     popup.setText(y)
     popup.exec_()
 
+def add_menu():
+    def info():
+        showInfo("""△ Focus: Gain compounding XP (+0.5) for consecutive reviews. 90 second time limit per review.
+
+◧ Curiosity: Gain 1-5 XP (randomly) for every card that changes from 'New' to 'Learning'.
+
+⨁ Endurance: Gain 1-3 XP (randomly) for every card reviewed.
+                 
+⨀ Recall: Gain XP for recalling cards correctly. Easy = 5 XP, Good = 3 XP, Hard = 1 XP, Again = 0 XP
+
+≡ Speed: Gain XP for answering quickly. <10 seconds = 5 XP, <15 seconds = 3 XP and <30 seconds = 1 XP. 
+
+The XP needed to level up can be viewed by hovering over the relevant skill symbol.""")
+    
+    # in case the user closes the dock
+    def show_dock():
+        # TODO
+        pass
+
+    action = QAction("RuneScape Gamification", mw)
+    qconnect(action.triggered, info)
+    mw.form.menuTools.addAction(action)
+
 # load the saved state of the skills dictionary when the Anki add-on is started
 anki.hooks.addHook("profileLoaded", load_skills)
 # register a hook to call the display_skills_on_home_screen function when the Anki home screen is displayed
-anki.hooks.addHook("profileLoaded", display_skills_on_home_screen)    
+anki.hooks.addHook("profileLoaded", display_skills_on_home_screen)
+# create a submenu within the Tools menu
+anki.hooks.addHook("profileLoaded", add_menu)
 # register a hook to call the on_showQuestion function when a card is first displayed
 anki.hooks.addHook("showQuestion", on_show_question)
 #gui_hooks.card_will_show.append(on_show_question)
