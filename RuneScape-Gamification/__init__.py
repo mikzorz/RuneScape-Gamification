@@ -30,7 +30,7 @@ def save_skills():
 def load_skills():
     global skills
     global skill_path
-    skill_path = os.path.realpath(os.path.dirname(__file__))
+    skill_path = os.path.realpath(os.path.dirname(__file__) + "/user_files")
     try:
         with open(skill_path + "/skills.json", "r") as f:
             skills = json.load(f)
