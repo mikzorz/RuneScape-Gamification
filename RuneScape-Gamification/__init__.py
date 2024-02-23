@@ -84,7 +84,6 @@ def increase_skill_progress(skill, amount):
        
     if skills[skill]["xp"] >= level_xp[skills[skill]["level"]]:
        skills[skill]["level"] += 1
-       skills[skill]["xp"] -= level_xp[skills[skill]["level"] - 1]
        # get the dock widget
        dock = mw.findChild(QtWidgets.QDockWidget)
        # get the label that displays the skill
