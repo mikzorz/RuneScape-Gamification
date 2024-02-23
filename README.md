@@ -1,14 +1,14 @@
 Runescape-Gamification Anki addon updated for **Anki v23.12.1**
 
 Qt6 only.
-Default fonts are Noto Sans and Noto Color Emoji
+Default fonts are Noto Sans and Noto Color Emoji.
 
 **CHANGELOG**  
 
 - ***CHANGE***: "XP no longer resets to 0 upon level up"
 - ***CHANGE***: *Changed icons to more descriptive emojis*
 - ***CHANGE***: *Added a menu option with info about the skills*
-- ***FIX***: *Moved save data to user_files directory, data should now persist between updates*
+- ***CHANGE***: *Moved save data to user_files directory, data should now persist between updates*
 - ***FIX***: *Added prefixes to Qt6 enums*
 
 <hr/>  
