@@ -20,7 +20,7 @@ from PyQt6 import QtWidgets
 level_xp = [0, 83, 174, 276, 388, 512, 650, 801, 969, 1154, 1358, 1584, 1833, 2107, 2411, 2746, 3115, 3523, 3973, 4470, 5018, 5624, 6291, 7028, 7842, 8740, 9730, 10824, 12031, 13363, 14833, 16456, 18247, 20224, 22406, 24815, 27473, 30408, 33648, 37224, 41171, 45529, 50339, 55649, 61512, 67983, 75127, 83014, 91721, 101333, 111945, 123660, 136594, 150872, 166636, 184040, 203254, 224466, 247886, 273742, 302288, 333804, 368599, 407015, 449428, 496254, 547953, 605032, 668051, 737627, 814445, 899257, 992895, 1096278, 1210421, 1336443, 1475581, 1629200, 1798808, 1986068, 2192818, 2421087, 2673114, 2951373, 3258594, 3597792, 3972294, 4385776, 4842295, 5346332, 5902831, 6517253, 7195629, 7944614, 8771558, 9684577, 10692629, 11805606, 13034431]
 
 # define skill names and labels
-skill_symbols = {"focus": "🎯", "curiosity": "💡", "endurance": "♥", "recall": "💾", "speed": "⚡"} #⚕ ⚖ ✚ »
+skill_symbols = {"focus": "🎯", "curiosity": "💡", "endurance": "♥", "recall": "💾", "speed": "⚡"}
 
 # define a variable to keep track of the number of consecutive reviews the user has completed
 consecutive_reviews = -0.5
@@ -55,53 +55,48 @@ def skill_label_color_change(skill_label, duration):
     skill_label.setStyleSheet("")
 
 def level_up(skill_label, skill):
-    # get the dock widget
-    dock = mw.findChild(QtWidgets.QDockWidget)    
-    # get the label that displays the skill
-    skill_label = dock.findChild(QtWidgets.QLabel, f"{skill}_label")
-    # change the text color of the label to orange
-    skill_label.setStyleSheet("color: green;")
-    skill_label.setText("{} {}".format(skill_symbols[skill], skills[skill]["level"]))
-    # create a thread to update the position of the skill label
-    thread = threading.Thread(target=skill_label_color_change, args=(skill_label, 15))
-    thread.start()  # start the thread
+    if skill_label is not None:
+        # change the text color of the label to green
+        skill_label.setStyleSheet("color: green;")
+        skill_label.setText("{} {}".format(skill_symbols[skill], skills[skill]["level"]))
+        # create a thread to update the position of the skill label
+        thread = threading.Thread(target=skill_label_color_change, args=(skill_label, 15))
+        thread.start()  # start the thread
     
-def animate_xp_gain(skill):
-    # get the dock widget
-    dock = mw.findChild(QtWidgets.QDockWidget)
-    # get the label that displays the skill
-    skill_label = dock.findChild(QtWidgets.QLabel, f"{skill}_label")
-    # change the text color of the label to orange
-    skill_label.setStyleSheet("color: orange;")
-    # create a thread to update the position of the skill label
-    thread = threading.Thread(target=skill_label_color_change, args=(skill_label, 3))
-    thread.start()  # start the thread
+def animate_xp_gain(skill_label, skill):
+    if skill_label is not None:
+        # change the text color of the label to orange
+        skill_label.setStyleSheet("color: orange;")
+        # create a thread to update the position of the skill label
+        thread = threading.Thread(target=skill_label_color_change, args=(skill_label, 3))
+        thread.start()  # start the thread
 
 # define a function to increase the user's progress on a skill
 def increase_skill_progress(skill, amount):
     if amount > 0:
-       skills[skill]["xp"] += amount
-       
-    if skills[skill]["xp"] >= level_xp[skills[skill]["level"]]:
-       skills[skill]["level"] += 1
-       # get the dock widget
-       dock = mw.findChild(QtWidgets.QDockWidget)
-       # get the label that displays the skill
-       skill_label = dock.findChild(QtWidgets.QLabel, f"{skill}_label")
-       # update the text of the label to display the updated level
-       # show the level up animation for the skill label
-       level_up(skill_label, skill)
-    # show the XP label
-    elif amount > 0:
-       animate_xp_gain(skill)
+        skills[skill]["xp"] += amount
+
+        # get the dock widget
+        dock = mw.findChild(QtWidgets.QDockWidget)
+        # get the label that displays the skill
+        skill_label = dock.findChild(QtWidgets.QLabel, f"{skill}_label")
+        
+        if skills[skill]["xp"] >= level_xp[skills[skill]["level"]]:
+           skills[skill]["level"] += 1
+           # update the text of the label to display the updated level
+           # show the level up animation for the skill label
+           level_up(skill_label, skill)
+        elif amount > 0:
+           animate_xp_gain(skill_label, skill)
        
 def update_skill_tool_tip(skill):
     # get the dock widget
     dock = mw.findChild(QtWidgets.QDockWidget)
     # get the label that displays the skill
     skill_label = dock.findChild(QtWidgets.QLabel, f"{skill}_label")
-    # update the tool tip for the label to display the updated skill level and XP of the tool tip
-    skill_label.setToolTip("{} Level {} ({}/{} XP)".format(skill, skills[skill]["level"], skills[skill]["xp"], level_xp[skills[skill]["level"]]))
+    if skill_label is not None:
+        # update the tool tip for the label to display the updated skill level and XP of the tool tip
+        skill_label.setToolTip("{} Level {} ({}/{} XP)".format(skill, skills[skill]["level"], skills[skill]["xp"], level_xp[skills[skill]["level"]]))
        
 # define a function to reset the consecutive reviews counter
 def reset_consecutive_reviews():
