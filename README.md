@@ -2,6 +2,7 @@ Runescape-Gamification Anki addon updated for **Anki v23.12.1**
 
 Qt6 only.
 Default fonts are Noto Sans and Noto Color Emoji.
+*If any icons seem strange, another font may be interfering (such as DejaVu).*
 
 **CHANGELOG**  
 
