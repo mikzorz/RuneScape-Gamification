@@ -265,15 +265,18 @@ def debug_popup(y):
 class MyDialog(QtWidgets.QDialog):
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
-        label = QtWidgets.QLabel("""🎯 Focus: Gain compounding XP (+0.5) for consecutive reviews. 90 second time limit per review.
+        label = QtWidgets.QLabel("""🎯 Focus: Gain compounding XP (+4) for consecutive reviews. 90 second time limit per review.
 
-💡 Curiosity: Gain 1-5 XP (randomly) for every card that changes from 'New' to 'Learning'.
+💡 Curiosity: Gain 260-1300 XP (randomly) for every card that changes from 'New' to 'Learning'.
 
-♥ Endurance: Gain 1-3 XP (randomly) for every card reviewed.
+❤️ Endurance: Gain 60, 80 or 100 XP (randomly) for every card reviewed.
                  
-💾 Recall: Gain XP for recalling cards correctly. Easy = 5 XP, Good = 3 XP, Hard = 1 XP, Again = 0 XP
+💾 Recall: Gain (3-6)^Ease XP (randomly) for recalling cards correctly. 0 XP if "Again" is selected as answer.
+(e.g. User chooses "Good", RNG generates 4 XP, Ease of "Good" is 3, total XP gained = 4^3 = 64)
+                                 
+⚡ Speed: Gain XP for answering quickly. <10 seconds = 100 XP, <15 seconds = 50 XP and <30 seconds = 20 XP. 
 
-⚡ Speed: Gain XP for answering quickly. <10 seconds = 5 XP, <15 seconds = 3 XP and <30 seconds = 1 XP. 
+⏳ Consistency: Gain XP for maintaining a daily streak. Starts at 150 XP, increasing rapidly, slows down at 320 days.
 
 The XP needed to level up can be viewed by hovering over the relevant skill symbol.""")
         font = QtGui.QFont()
