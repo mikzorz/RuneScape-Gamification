@@ -20,7 +20,7 @@ from PyQt6 import QtWidgets
 level_xp = [0, 83, 174, 276, 388, 512, 650, 801, 969, 1154, 1358, 1584, 1833, 2107, 2411, 2746, 3115, 3523, 3973, 4470, 5018, 5624, 6291, 7028, 7842, 8740, 9730, 10824, 12031, 13363, 14833, 16456, 18247, 20224, 22406, 24815, 27473, 30408, 33648, 37224, 41171, 45529, 50339, 55649, 61512, 67983, 75127, 83014, 91721, 101333, 111945, 123660, 136594, 150872, 166636, 184040, 203254, 224466, 247886, 273742, 302288, 333804, 368599, 407015, 449428, 496254, 547953, 605032, 668051, 737627, 814445, 899257, 992895, 1096278, 1210421, 1336443, 1475581, 1629200, 1798808, 1986068, 2192818, 2421087, 2673114, 2951373, 3258594, 3597792, 3972294, 4385776, 4842295, 5346332, 5902831, 6517253, 7195629, 7944614, 8771558, 9684577, 10692629, 11805606, 13034431]
 
 # define skill names and labels
-skill_symbols = {"focus": "🎯", "curiosity": "💡", "endurance": "❤️", "recall": "💾", "speed": "⚡"}
+skill_symbols = {"focus": "🎯", "curiosity": "💡", "endurance": "❤️", "recall": "💾", "speed": "⚡", "consistency": "⏳"}
 
 # define a variable to keep track of the number of consecutive reviews the user has completed
 consecutive_reviews = 0
@@ -39,7 +39,7 @@ def load_skills():
         with open(skill_path + "/skills.json", "r") as f:
             skills = json.load(f)
     except:
-        skills = {"focus": {"level": 1, "xp": 0}, "curiosity": {"level": 1, "xp": 0}, "endurance": {"level": 1, "xp": 0}, "recall": {"level": 1, "xp": 0}, "speed": {"level": 1, "xp": 0}}
+        skills = {"focus": {"level": 1, "xp": 0}, "curiosity": {"level": 1, "xp": 0}, "endurance": {"level": 1, "xp": 0}, "recall": {"level": 1, "xp": 0}, "speed": {"level": 1, "xp": 0}, "consistency": {"level": 1, "xp": 0}}
 
     if not all(skill in skills for skill in skill_symbols):
         # Add a dictionary entry for each missing skill
@@ -111,13 +111,36 @@ def update_skill_tool_tip(skill_label, skill):
     xp_remaining = xp_for_next_level - current_xp
     
     # update the tool tip for the label to display the updated skill level and XP of the tool tip
-    skill_label.setToolTip("Level: {} (Current XP: {}, Next Lvl: {}, Remaining: {})".format(skills[skill]["level"], skills[skill]["xp"], xp_for_next_level, xp_remaining))
+    skill_label.setToolTip("{} Level: {} (Current XP: {}, Next Lvl: {}, Remaining: {})".format(skill.title(), skills[skill]["level"], skills[skill]["xp"], xp_for_next_level, xp_remaining))
 
 # define a function to reset the consecutive reviews counter
 def reset_consecutive_reviews():
     global consecutive_reviews
     consecutive_reviews = 0
- 
+
+# track_daily_streak keeps track of how many days in a row the user has reviewed at least 1 card
+def track_daily_streak():
+    global streak_awarded_today
+    streak_awarded_today = False
+    today = datetime.datetime.now().date()
+
+    if "streak_days" not in skills:
+        skills["streak_days"] = 0
+
+    if "last_review_date" in skills:
+        last_review_date = datetime.datetime.strptime(skills["last_review_date"], "%Y-%m-%d").date()
+        if (today - last_review_date).days == 1:
+            skills["streak_days"] += 1
+        elif (today - last_review_date).days > 1:
+            skills["streak_days"] = 1
+        else:
+            streak_awarded_today = True
+    else:
+        skills["streak_days"] = 1
+
+    skills["last_review_date"] = today.strftime("%Y-%m-%d")
+    save_skills()
+
 #def on_show_question(reviewer, card, ease):
 def on_show_question():
     global start_time
@@ -180,6 +203,26 @@ def on_answer_button(reviewer, card, ease):
         # Rates = 13034431 (level 99 xp requirement) / by 50000, 40000, 30000, 20000, 10000 respectively.
         increase_skill_progress("curiosity", curiosity_xp[0])
         find_and_update_skill_tool_tip("curiosity")
+
+    # "consistency" skill
+    if not streak_awarded_today:
+        # Level 99 can be reached with a 320 day streak
+        # Day 1 = 150, ~85500 by day 320
+        # From day 321, xp increasing much more slowly. (?Future-proofing?)
+        fastGainDays = 320
+        factor = 150
+        growth_exponent = 1.1
+        if skills["streak_days"] <= fastGainDays:
+            consistency_xp = round(factor * pow(skills["streak_days"], growth_exponent))
+        else:
+            offset = (factor * pow(fastGainDays, 1.1))
+            consistency_xp = round(factor / 100 * pow((skills["streak_days"] - fastGainDays), growth_exponent - 0.3) + offset)
+    else:
+        consistency_xp = 0
+
+    # Increase consistency skill progress
+    increase_skill_progress("consistency", consistency_xp)
+    find_and_update_skill_tool_tip("consistency")
 
 # define a function to display the skill levels on the Anki home screen
 def display_skills_on_home_screen():
@@ -271,5 +314,6 @@ gui_hooks.reviewer_did_answer_card.append(on_answer_button)
 gui_hooks.reviewer_will_end.append(reset_consecutive_reviews)
 # register a hook to save the skills dictionary when the Anki program is closed
 anki.hooks.addHook("unloadProfile", save_skills)
-
+#register a hook to track daily streak
+anki.hooks.addHook("showAnswer", track_daily_streak)
 
