@@ -89,15 +89,29 @@ def increase_skill_progress(skill, amount):
         elif amount > 0:
            animate_xp_gain(skill_label, skill)
        
-def update_skill_tool_tip(skill):
+def find_and_update_skill_tool_tip(skill):
     # get the dock widget
     dock = mw.findChild(QtWidgets.QDockWidget)
     # get the label that displays the skill
     skill_label = dock.findChild(QtWidgets.QLabel, f"{skill}_label")
     if skill_label is not None:
-        # update the tool tip for the label to display the updated skill level and XP of the tool tip
-        skill_label.setToolTip("{} Level {} ({}/{} XP)".format(skill, skills[skill]["level"], skills[skill]["xp"], level_xp[skills[skill]["level"]]))
-       
+        update_skill_tool_tip(skill_label, skill)
+
+def update_skill_tool_tip(skill_label, skill):
+    # Current xp for skill
+    current_xp = skills[skill]["xp"]
+    # Get the amount of xp that was required to reach current level
+    xp_for_current_level = level_xp[skills[skill]["level"]-1]
+    # Calculate the experience gained during this level
+    xp_this_level = current_xp - xp_for_current_level
+    # Calculate the total experience needed to advance to the next level
+    xp_for_next_level = level_xp[skills[skill]["level"]]
+    # Amount of xp required to reach next level
+    xp_remaining = xp_for_next_level - current_xp
+    
+    # update the tool tip for the label to display the updated skill level and XP of the tool tip
+    skill_label.setToolTip("Level: {} (Current XP: {}, Next Lvl: {}, Remaining: {})".format(skills[skill]["level"], skills[skill]["xp"], xp_for_next_level, xp_remaining))
+
 # define a function to reset the consecutive reviews counter
 def reset_consecutive_reviews():
     global consecutive_reviews
@@ -127,7 +141,7 @@ def on_show_answer():
     # increase the user's progress on the "speed" skill
     increase_skill_progress("speed", speed_xp)
     # update the tool tip for the label to display the updated "speed" level and XP
-    update_skill_tool_tip("speed")
+    find_and_update_skill_tool_tip("speed")
     
 def on_answer_button(reviewer, card, ease):
     if elapsed_time_seconds < 90:
@@ -136,14 +150,14 @@ def on_answer_button(reviewer, card, ease):
         consecutive_reviews += 0.5
         increase_skill_progress("focus", consecutive_reviews)
         # get the label that displays the "focus" skill and update the tool tip label
-        update_skill_tool_tip("focus")
+        find_and_update_skill_tool_tip("focus")
     else:
         reset_consecutive_reviews()
     
     endurance_xp = random.sample([1, 2, 3], k=1)
     increase_skill_progress("endurance", endurance_xp[0])
     # update the tool tip for the label to display the updated "speed" level and XP
-    update_skill_tool_tip("endurance")
+    find_and_update_skill_tool_tip("endurance")
      # determine the amount of XP to award for the "recall" skill based on the user's answer
     recall_xp = 0
     if ease == 2:
@@ -155,13 +169,13 @@ def on_answer_button(reviewer, card, ease):
       
     # increase the user's progress on the "recall" skill
     increase_skill_progress("recall", recall_xp)
-    update_skill_tool_tip("recall")
+    find_and_update_skill_tool_tip("recall")
 
     # Increase curiosity by 1 xp for new cards
     if card.ivl == 0:
         curiosity_xp = random.sample([1, 2, 3, 4, 5], k=1)
         increase_skill_progress("curiosity", curiosity_xp[0])
-        update_skill_tool_tip("curiosity")
+        find_and_update_skill_tool_tip("curiosity")
 
 # define a function to display the skill levels on the Anki home screen
 def display_skills_on_home_screen():
@@ -181,7 +195,7 @@ def display_skills_on_home_screen():
         font.setPointSize(11)
         label.setFont(font)
         # set the tool tip to display a message with the XP needed for the next level
-        label.setToolTip("{} Level {} ({}/{} XP)".format(skill, skills[skill]["level"], skills[skill]["xp"], level_xp[skills[skill]["level"]]))
+        update_skill_tool_tip(label, skill)
         layout.addWidget(label)
 
     # create a widget to hold the layout and add it to the dock
