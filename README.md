@@ -3,18 +3,21 @@ Runescape-Gamification Anki addon updated for **Anki v23.12.1**
 Qt6 only.  
 *If any icons seem strange, another font (such as DejaVu) may be interfering with your main icon font.*
 
-**CHANGELOG**  
+#### CHANGELOG
 
+###### v1.0.3
 - ***CHANGE***: *New tooltips*
 - ***CHANGE***: *Changed heart emoji*
 - ***FIX***: *Animations won't trigger if labels cannot be found*
-
+###### v1.0.2
 - ***CHANGE***: *XP no longer resets to 0 upon level up*
 - ***CHANGE***: *Changed icons to more descriptive emojis*
 - ***CHANGE***: *Added a menu option with info about the skills*
+###### v1.0.1
 - ***CHANGE***: *Moved save data to user_files directory, data should now persist between updates*
-
+###### v1.0.0
 - ***FIX***: *Added prefixes to Qt6 enums*
+
 
 <hr/>  
 <hr/>
