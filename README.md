@@ -1,5 +1,7 @@
 Runescape-Gamification Anki addon updated for **Anki v23.12.1**
 
+![screenshot](https://github.com/mikzorz/RuneScape-Gamification/blob/main/RuneScape-Gamification_scrnsht.png?raw=true)
+
 Qt6 only.  
 *If any icons seem strange, another font (such as DejaVu) may be interfering with your main icon font.*
 
