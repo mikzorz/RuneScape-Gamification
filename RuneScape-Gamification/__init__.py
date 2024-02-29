@@ -23,7 +23,7 @@ level_xp = [0, 83, 174, 276, 388, 512, 650, 801, 969, 1154, 1358, 1584, 1833, 21
 skill_symbols = {"focus": "🎯", "curiosity": "💡", "endurance": "❤️", "recall": "💾", "speed": "⚡"}
 
 # define a variable to keep track of the number of consecutive reviews the user has completed
-consecutive_reviews = -0.5
+consecutive_reviews = 0
 
 # define a function to save the current state of the skills dictionary to a file
 def save_skills():
@@ -60,7 +60,7 @@ def level_up(skill_label, skill):
         skill_label.setStyleSheet("color: green;")
         skill_label.setText("{} {}".format(skill_symbols[skill], skills[skill]["level"]))
         # create a thread to update the position of the skill label
-        thread = threading.Thread(target=skill_label_color_change, args=(skill_label, 15))
+        thread = threading.Thread(target=skill_label_color_change, args=(skill_label, 5))
         thread.start()  # start the thread
     
 def animate_xp_gain(skill_label, skill):
@@ -82,12 +82,13 @@ def increase_skill_progress(skill, amount):
         skill_label = dock.findChild(QtWidgets.QLabel, f"{skill}_label")
         
         if skills[skill]["xp"] >= level_xp[skills[skill]["level"]]:
-           skills[skill]["level"] += 1
-           # update the text of the label to display the updated level
-           # show the level up animation for the skill label
-           level_up(skill_label, skill)
-        elif amount > 0:
-           animate_xp_gain(skill_label, skill)
+            while skills[skill]["xp"] >= level_xp[skills[skill]["level"]]:
+                skills[skill]["level"] += 1
+            # update the text of the label to display the updated level
+            # show the level up animation for the skill label
+            level_up(skill_label, skill)
+        else:
+            animate_xp_gain(skill_label, skill)
        
 def find_and_update_skill_tool_tip(skill):
     # get the dock widget
@@ -115,7 +116,7 @@ def update_skill_tool_tip(skill_label, skill):
 # define a function to reset the consecutive reviews counter
 def reset_consecutive_reviews():
     global consecutive_reviews
-    consecutive_reviews = -1
+    consecutive_reviews = 0
  
 #def on_show_question(reviewer, card, ease):
 def on_show_question():
@@ -132,11 +133,11 @@ def on_show_answer():
     # determine the amount of XP to award for the "speed" skill based on the elapsed time
     speed_xp = 0
     if elapsed_time_seconds < 10:
-        speed_xp = 5
+        speed_xp = 100
     elif elapsed_time_seconds < 15:
-        speed_xp = 3
+        speed_xp = 50
     elif elapsed_time_seconds < 30:
-        speed_xp = 1
+        speed_xp = 20
 
     # increase the user's progress on the "speed" skill
     increase_skill_progress("speed", speed_xp)
@@ -147,33 +148,36 @@ def on_answer_button(reviewer, card, ease):
     if elapsed_time_seconds < 90:
         global consecutive_reviews
         # increment the consecutive reviews counter
-        consecutive_reviews += 0.5
-        increase_skill_progress("focus", consecutive_reviews)
+        consecutive_reviews += 1
+        increase_skill_progress("focus", consecutive_reviews*4)
         # get the label that displays the "focus" skill and update the tool tip label
         find_and_update_skill_tool_tip("focus")
     else:
         reset_consecutive_reviews()
     
-    endurance_xp = random.sample([1, 2, 3], k=1)
+    endurance_xp = random.sample([60, 80, 100], k=1)
     increase_skill_progress("endurance", endurance_xp[0])
-    # update the tool tip for the label to display the updated "speed" level and XP
+    # update the tool tip for the label to display the updated "endurance" level and XP
     find_and_update_skill_tool_tip("endurance")
+
      # determine the amount of XP to award for the "recall" skill based on the user's answer
     recall_xp = 0
-    if ease == 2:
-        recall_xp = 1
-    elif ease == 3:
-        recall_xp = 3
-    elif ease == 4:
-        recall_xp = 5
+    if ease >= 2:
+        recall_xp = random.sample([3,4,4,5,5,6], k=1)[0]
+        recall_xp = pow(recall_xp, ease)
+        # ease 1 = 0
+        # ease 2 = 9, 16, 25, 36
+        # ease 3 = 27, 64, 125, 216
+        # ease 4 = 81, 256, 625, 1296
       
     # increase the user's progress on the "recall" skill
     increase_skill_progress("recall", recall_xp)
     find_and_update_skill_tool_tip("recall")
 
-    # Increase curiosity by 1 xp for new cards
+    # Increase curiosity xp for new cards
     if card.ivl == 0:
-        curiosity_xp = random.sample([1, 2, 3, 4, 5], k=1)
+        curiosity_xp = random.sample([260, 325, 435, 435, 650, 650, 1300], k=1)
+        # Rates = 13034431 (level 99 xp requirement) / by 50000, 40000, 30000, 20000, 10000 respectively.
         increase_skill_progress("curiosity", curiosity_xp[0])
         find_and_update_skill_tool_tip("curiosity")
 

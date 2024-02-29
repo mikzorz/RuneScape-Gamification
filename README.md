@@ -6,6 +6,12 @@ Qt6 only.
 #### CHANGELOG
 
 ###### v1.0.3
+- ***CHANGE***: *New XP rates*
+    - Focus consecutive reward increased from +0.5 to +4.
+    - Curiosity randomly rewards 260, 325, 435, 650, 1300. (Level 99 / n\*10000) 
+    - Endurance randomly rewards 60, 80, 100.
+    - Recall rewards between 3^ease and 6^ease when ease >= 2.
+    - Speed now rewards 100, 50, 20 instead of 5, 3, 1.
 - ***CHANGE***: *New tooltips*
 - ***CHANGE***: *Changed heart emoji*
 - ***FIX***: *Animations won't trigger if labels cannot be found*
