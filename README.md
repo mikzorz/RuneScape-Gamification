@@ -6,6 +6,8 @@ Qt6 only.
 #### CHANGELOG
 
 ###### v1.0.3
+- ***CHANGE***: *New skill "Consistency"*
+    - Consistency is a skill that gains XP via a daily streak. The longer the streak, the higher the XP gain.
 - ***CHANGE***: *New XP rates*
     - Focus consecutive reward increased from +0.5 to +4.
     - Curiosity randomly rewards 260, 325, 435, 650, 1300. (Level 99 / n\*10000) 
